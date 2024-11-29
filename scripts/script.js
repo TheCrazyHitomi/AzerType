@@ -525,38 +525,111 @@ function afficherEmail(nom, email, score) {
 
 
 /**
- * cette fonction verrifie le contenu de la balise input et si il corresponds aux criteres de validations
+ * Cette fonction prend un nom en paramètre et valide qu'il est au bon format
+ * ici : deux caractères au minimum
  * @param {string} nom 
- * @returns 
+ * @throws {Error}
  */
 
-// function validerNom(balise) {
-//     let nomRegex = new RegExp("[a-zA-Z\-\s\']{2}")
-//     console.log(nomRegex.test(balise.value))
-//     return nomRegex.test(balise.value)
-// };
+
+// autre possibilité : *** inverser la condition de validation *** 
+// *******************
+
+// function validerNom(nom) {
+//     if (nom.length < 2) {
+//         throw new Error("Le nom est trop court. ")
+//     }
+    
+// }
+// *******************
+
 
 function validerNom(nom) {
     if (nom.length >= 2){
-        console.log(true)
         return true
+    }else{
+    throw new Error("Le nom est trop court")
     }
-    console.log(false)
-    return false
 }
+
 /**
- * cette fonction verrifie le contenu de la balise input et si il corresponds aux criteres de validations
+* Cette fonction prend un email en paramètre et valide qu'il est au bon format. 
  * @param {string} email 
- * @returns 
+ * @throws {Error}
  */
+
+// autre possibilité : *** inverser la condition de validation *** 
+// *******************
+
+// function validerEmail(email) {
+//     let emailRegExp = new RegExp("[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z0-9._-]+")
+//     if (!emailRegExp.test(email)) {
+//         throw new Error("L'email n'est pas valide.")
+//     }
+    
+// }
+// *******************
+
+
 function validerEmail(email) {
     let emailRegex = new RegExp("[a-z0-9.-_]+@[a-z0-9.-_]+\\.[a-z]{2,3}")
     console.log(emailRegex.test(email))
     if (emailRegex.test(email)){
         return true
+    }else{
+        throw new Error("l'e-mail n'est pas valide")
     }
-    return false
 };
+
+/**
+ * Cette fonction affiche le message d'erreur passé en paramètre. 
+ * Si le span existe déjà, alors il est réutilisé pour ne pas multiplier
+ * les messages d'erreurs. 
+ * @param {string} message 
+ */
+
+function afficherMessageErreur(message){
+
+    let spanErreurMessage = document.getElementById("erreurMessage")
+
+    if(!spanErreurMessage){
+    let popup = document.querySelector(".popup")
+    spanErreurMessage = document.createElement("span")
+    spanErreurMessage.id = "erreurMessage"
+
+    popup.appendChild(spanErreurMessage)
+    }
+    spanErreurMessage.innerText = message
+}
+
+
+/**
+ * 
+ * @param {number} score 
+ * @param {number} i 
+ */
+
+function gererFormulaire(scoreEmail){
+
+    let mailForm = document.querySelector(".mailForm")
+                
+    mailForm.addEventListener("submit", (event) => {
+        try {
+                    
+            const nom = document.getElementById("nom").value  
+            const email = document.getElementById("email").value                
+            
+            validerNom(nom)
+            validerEmail(email)
+            afficherMessageErreur("")
+            afficherEmail(nom, email, scoreEmail)
+            
+
+        } catch(erreur){
+            afficherMessageErreur(erreur.message)
+        }
+    })
+}
 
 
     /**
@@ -606,25 +679,16 @@ function validerEmail(email) {
                     })
                 }
 
+            let mailForm = document.querySelector(".mailForm")
+                
+            mailForm.addEventListener("submit", (event) => {
+                event.preventDefault()
 
-                let mailForm = document.querySelector(".mailForm")
-                
-                mailForm.addEventListener("submit", (event) => {
-                    event.preventDefault()
-                    
-                    const nom = document.getElementById("nom").value  // autre possibilté : *** let baliseNom = document.getElementById("nom") / let nom = baliseNom.value ***
-                    const email = document.getElementById("email").value // autre possibilté : *** let baliseEmail= document.getElementById("email") / let email = baliseEmail.value ***
-                    
-                    let scoreEmail = `${score} / ${i}`                
-                    
-                    if (validerNom(nom) && validerEmail(email)) {
-                        afficherEmail(nom, email, scoreEmail)
-                    } else {
-                        console.log("error")
-                    }
-                    
-                })
-                
+                let scoreEmail = `${score} / ${i}`               
+                gererFormulaire(scoreEmail)
+            })
                 afficherResultat(score, i)
-                
+
             }
+        
+
